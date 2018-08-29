@@ -1,20 +1,44 @@
+const node_adapter = require('./node_storage')
+const browser_adapter = require('./browser_storage')
 
-const module_name = {
-  some_property: 'hello subspace',
-  sync_method: () => {
-    // describe method
-    return module_name.some_property
-  },
-  async_method: async () => {
-    // describe method
-    try {
-      return module_name.some_property
-    }
-    catch(error) {
-      console.log('An error occcured')
-      console.log(error)
+
+export default class Storage {
+  adapter: any
+  constructor(adapter: string) {
+    if (adapter === 'browser') {
+      this.adapter = browser_adapter
+    } else {
+      this.adapter = node_adapter
     }
   }
-}
 
-export default module_name
+  async set(key: string, value: string) {
+    await this.adapter.set(key, value)
+    return
+  }
+
+  async get(key: string) {
+    const value: string = await this.adapter.get(key)
+    return value
+  }
+
+  async del(key: string) {
+    await this.adapter.del(key)
+    return
+  }
+
+  async getKeys() {
+    let keys: string[] = await this.adapter.get_keys()
+    return keys
+  }
+
+  async getLength() {
+    let length: number = await this.adapter.get_length()
+    return length
+  }
+
+  async clear() {
+    await this.adapter.clear()
+    return
+  }
+}

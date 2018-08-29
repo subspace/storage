@@ -1,5 +1,5 @@
 {
-  "name": "boilerplate",
+  "name": "subspace-storage",
   "version": "1.0.0",
   "main": "dist/main.js",
   "author": "subspace",
@@ -11,5 +11,9 @@
     "jest": "^23.5.0",
     "ts-jest": "^23.1.4",
     "typescript": "^3.0.1"
+  },
+  "dependencies": {
+    "localforage": "^1.7.2",
+    "node-persist": "^3.0.1"
   }
 }
