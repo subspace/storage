@@ -28,7 +28,7 @@ Require this module inside a script
 
 ```javascript
 const Storage = require('subspace-storage').default
-const storage new Storage(adapter='node')
+const storage = new Storage(adapter='node')
 
 // adapter may be one of three types
   // 'node' (default)
