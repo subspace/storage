@@ -1,4 +1,4 @@
-const browser_storage = require('local-forage')
+const browser_storage = require('localforage')
 
 const Adapter = {
   put: async (key: string, value: object) => {
