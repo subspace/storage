@@ -34,7 +34,7 @@ const Adapter = {
       console.log(error)
     }
   },
-  set: async (key: string, value: object) => {
+  put: async (key: string, value: object) => {
     try {
       await Adapter.check
       await node_storage.setItem(key, value)

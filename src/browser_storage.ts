@@ -1,7 +1,7 @@
 const browser_storage = require('local-forage')
 
 const Adapter = {
-  set: async (key: string, value: object) => {
+  put: async (key: string, value: object) => {
     try {
       await browser_storage.setItem(key, value)
       return
