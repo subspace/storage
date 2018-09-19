@@ -29,6 +29,7 @@ export default class Storage {
   }
 
   async put(key: any, value: any) {
+    console.log(this.adapter)
     await this.adapter.put(key, value)
     return
   }

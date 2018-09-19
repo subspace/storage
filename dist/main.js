@@ -35,6 +35,7 @@ class Storage {
     }
     put(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(this.adapter);
             yield this.adapter.put(key, value);
             return;
         });
