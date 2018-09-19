@@ -33,20 +33,47 @@ class Storage {
             this.adapter = rocks_adapter;
         }
     }
+    encodeKey(key) {
+        // convert key to binary before saving to RocksDB
+        // if string convert to buffer, else alreaddy is buffer 
+        if (typeof key === 'string') {
+            key = Buffer.from(key);
+        }
+        return key;
+    }
+    encodeValue(value) {
+        // convert value to binary before saving to RocksDB 
+        // stringify JSON and convert to a buffer
+        const stringValue = JSON.stringify(value);
+        const bufferValue = Buffer.from(stringValue);
+        return bufferValue;
+    }
+    decodeValue(value) {
+        // read binary value from Rocks and convert back to JSON
+        // convert buffer back to valid JSON
+        const stringValue = value.toString();
+        const JSONvalue = JSON.parse(stringValue);
+        return JSONvalue;
+    }
     put(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
+            key = this.encodeKey(key);
+            value = this.encodeValue(value);
             yield this.adapter.put(key, value);
             return;
         });
     }
     get(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            const value = yield this.adapter.get(key);
+            key = this.encodeKey(key);
+            const bufferValue = yield this.adapter.get(key);
+            const value = this.decodeValue(bufferValue);
             return value;
         });
     }
     del(key) {
         return __awaiter(this, void 0, void 0, function* () {
+            key = this.encodeKey(key);
             yield this.adapter.del(key);
             return;
         });

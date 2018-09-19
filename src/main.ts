@@ -28,17 +28,47 @@ export default class Storage {
     }
   }
 
+  encodeKey(key: any) {
+    // convert key to binary before saving to RocksDB
+    // if string convert to buffer, else alreaddy is buffer 
+    if (typeof key === 'string') {
+      key = Buffer.from(key)
+    }
+    return key 
+  }
+
+  encodeValue(value: object) {
+    // convert value to binary before saving to RocksDB 
+    // stringify JSON and convert to a buffer
+    const stringValue: string = JSON.stringify(value)
+    const bufferValue: any = Buffer.from(stringValue)
+    return bufferValue
+  }
+
+  decodeValue(value: any) {
+    // read binary value from Rocks and convert back to JSON
+    // convert buffer back to valid JSON
+    const stringValue: string = value.toString()
+    const JSONvalue: object = JSON.parse(stringValue)
+    return JSONvalue
+  }
+
   async put(key: any, value: any) {
+    key = this.encodeKey(key)
+    value = this.encodeValue(value)
     await this.adapter.put(key, value)
     return
   }
 
   async get(key: any) {
-    const value: number = await this.adapter.get(key)
+    key = this.encodeKey(key)
+    const bufferValue: any = await this.adapter.get(key)
+    const value = this.decodeValue(bufferValue)
     return value
   }
 
   async del(key: any) {
+    key = this.encodeKey(key)
     await this.adapter.del(key)
     return
   }

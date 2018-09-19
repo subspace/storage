@@ -15,7 +15,7 @@ const Adapter = {
   },
   get: async (key: any) => {
     try {
-      let value: number = await db.get(key)
+      let value: any = await db.get(key)
       return value 
     } 
     catch (error) {
