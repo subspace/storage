@@ -21,11 +21,19 @@ Not implemented yet...
 
 ### API
 
-#### storage.put(key: string | Buffer, value: Buffer) => {}
+#
 
-#### storage.get(key: string | Buffer) => {value: Buffer}
+```javascript
+storage.put(key: string | Buffer, value: Buffer) => { }
+```
 
-#### storage.del(key: string | Buffer) => {}
+```javascript
+storage.get(key: string | Buffer) => { value: Buffer }
+```
+
+```javascript
+storage.del(key: string | Buffer) => { }
+```
 
 ### Usage by other modules
 
@@ -75,7 +83,7 @@ let value = {
 await stoage.put(key, value)
 
 // read value
-let  = await storage.get(key)
+let readValue = await storage.get(key)
 
 // delete value
 await storage.del(key)
