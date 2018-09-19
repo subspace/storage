@@ -1,6 +1,6 @@
-const rocks_adapter = require('./rocks_storage')
-const node_adapter = require('./node_storage')
-const browser_adapter = require('./browser_storage')
+const rocks_adapter = require('./rocks_storage').default
+const node_adapter = require('./node_storage').default
+const browser_adapter = require('./browser_storage').default
 
 // schema?
   // profile storage (save the keypair)
@@ -29,7 +29,6 @@ export default class Storage {
   }
 
   async put(key: any, value: any) {
-    console.log(this.adapter)
     await this.adapter.put(key, value)
     return
   }

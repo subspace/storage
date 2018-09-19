@@ -8,9 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const rocks_adapter = require('./rocks_storage');
-const node_adapter = require('./node_storage');
-const browser_adapter = require('./browser_storage');
+const rocks_adapter = require('./rocks_storage').default;
+const node_adapter = require('./node_storage').default;
+const browser_adapter = require('./browser_storage').default;
 // schema?
 // profile storage (save the keypair)
 // ledger storage (blocks, txs) => content addressed
@@ -35,7 +35,6 @@ class Storage {
     }
     put(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(this.adapter);
             yield this.adapter.put(key, value);
             return;
         });
