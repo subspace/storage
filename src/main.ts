@@ -15,7 +15,6 @@ const browser_adapter = require('./browser_storage').default
 
 // if I stored the public key of a record 
 
-
 export default class Storage {
   adapter: any
   constructor(adapter: string) {
@@ -28,24 +27,27 @@ export default class Storage {
     }
   }
 
-  encodeKey(key: any) {
-    // convert key to binary before saving to RocksDB
-    // if string convert to buffer, else alreaddy is buffer 
+  private encodeKey(key: string | Buffer) {
+    // convert key to binary before saving to storage
+    // if string convert to buffer, else already is buffer
+    let encodedKey: Buffer
     if (typeof key === 'string') {
-      key = Buffer.from(key)
+      encodedKey = Buffer.from(key)
+    } else {
+      encodedKey = key
     }
-    return key 
+    return encodedKey
   }
 
-  encodeValue(value: object) {
-    // convert value to binary before saving to RocksDB 
+  private encodeValue(value: object) {
+    // convert value (JSON object) to binary before saving to storage 
     // stringify JSON and convert to a buffer
     const stringValue: string = JSON.stringify(value)
-    const bufferValue: any = Buffer.from(stringValue)
+    const bufferValue: Buffer = Buffer.from(stringValue)
     return bufferValue
   }
 
-  decodeValue(value: any) {
+  private decodeValue(value: Buffer) {
     // read binary value from Rocks and convert back to JSON
     // convert buffer back to valid JSON
     const stringValue: string = value.toString()
@@ -53,23 +55,25 @@ export default class Storage {
     return JSONvalue
   }
 
-  async put(key: any, value: any) {
-    key = this.encodeKey(key)
-    value = this.encodeValue(value)
-    await this.adapter.put(key, value)
+  async put(key: string | Buffer, value: object) {
+    // put value to storage, given a key
+    const bufferKey: Buffer = this.encodeKey(key)
+    const bufferValue: Buffer = this.encodeValue(value)
+    await this.adapter.put(bufferKey, bufferValue)
     return
   }
 
-  async get(key: any) {
-    key = this.encodeKey(key)
-    const bufferValue: any = await this.adapter.get(key)
-    const value = this.decodeValue(bufferValue)
+  async get(key: string | Buffer) {
+    // get value from storage, given a key
+    const bufferKey: Buffer = this.encodeKey(key)
+    const bufferValue: Buffer = await this.adapter.get(key)
+    const value: object = this.decodeValue(bufferValue)
     return value
   }
 
-  async del(key: any) {
-    key = this.encodeKey(key)
-    await this.adapter.del(key)
+  async del(key: string | Buffer) {
+    const bufferKey: Buffer = this.encodeKey(key)
+    await this.adapter.del(bufferKey)
     return
   }
 

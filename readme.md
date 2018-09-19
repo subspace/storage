@@ -2,7 +2,11 @@
 
 Provides a common interface for all core modules to interact with local storage in a device agnoostic manner.
 
-### Node JS (Server, Electron, BitBot)
+### Node JS Primary
+
+Uses [RocksDB](https://rocksdb.org/) through [level-rocksdb](https://github.com/Level/level-rocksdb)
+
+### Node JS Backup
 
 Uses [node-persist](https://github.com/simonlast/node-persist#readme) 
 
@@ -14,6 +18,38 @@ Uses [localForage](https://github.com/localForage/localForage), a wrapper around
 
 Uses [AsyncStorage](https://facebook.github.io/react-native/docs/asyncstorage)  
 Not implemented yet...
+
+### API
+
+#### storage.put(key: string | Buffer, value: Buffer) => {}
+
+#### storage.get(key: string | Buffer) => {value: Buffer}
+
+#### storage.del(key: string | Buffer) => {}
+
+### Usage by other modules
+
+#### Profile
+
+Persists the user profile under key: 'profile'
+
+#### Tranpsort
+
+Persists a map of gateway nodes and IP addresses under key: 'gateways'
+
+#### Tracker
+
+Persists the tracker between sessions under key: 'tracker'
+
+#### Ledger
+
+Stores blocks and txs under key: Buffer.from(hash(value))
+
+#### Database
+
+Stores mutable records under key: Buffer.from(hash(record_public_key))
+
+Stores immutable records under key: Buffer.from(hash(encoded_value))
 
 
 ## Module Usage
@@ -28,10 +64,27 @@ Require this module inside a script
 
 ```javascript
 const Storage = require('subspace-storage').default
-const storage = new Storage(adapter='node')
+const storage = new Storage(adapter='rocks')
+
+let key = Buffer.from(crypto.getHash('key'), 'hex')
+let value = {
+  some: 'value'
+}
+
+// write value
+await stoage.put(key, value)
+
+// read value
+let  = await storage.get(key)
+
+// delete value
+await storage.del(key)
+
+
 
 // adapter may be one of three types
-  // 'node' (default)
+  // 'rocks' (default)
+  // 'node' 
   // 'browser'
   // 'mobile'
 ```

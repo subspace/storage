@@ -34,15 +34,19 @@ class Storage {
         }
     }
     encodeKey(key) {
-        // convert key to binary before saving to RocksDB
-        // if string convert to buffer, else alreaddy is buffer 
+        // convert key to binary before saving to storage
+        // if string convert to buffer, else already is buffer
+        let encodedKey;
         if (typeof key === 'string') {
-            key = Buffer.from(key);
+            encodedKey = Buffer.from(key);
         }
-        return key;
+        else {
+            encodedKey = key;
+        }
+        return encodedKey;
     }
     encodeValue(value) {
-        // convert value to binary before saving to RocksDB 
+        // convert value (JSON object) to binary before saving to storage 
         // stringify JSON and convert to a buffer
         const stringValue = JSON.stringify(value);
         const bufferValue = Buffer.from(stringValue);
@@ -57,15 +61,17 @@ class Storage {
     }
     put(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            key = this.encodeKey(key);
-            value = this.encodeValue(value);
-            yield this.adapter.put(key, value);
+            // put value to storage, given a key
+            const bufferKey = this.encodeKey(key);
+            const bufferValue = this.encodeValue(value);
+            yield this.adapter.put(bufferKey, bufferValue);
             return;
         });
     }
     get(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            key = this.encodeKey(key);
+            // get value from storage, given a key
+            const bufferKey = this.encodeKey(key);
             const bufferValue = yield this.adapter.get(key);
             const value = this.decodeValue(bufferValue);
             return value;
@@ -73,8 +79,8 @@ class Storage {
     }
     del(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            key = this.encodeKey(key);
-            yield this.adapter.del(key);
+            const bufferKey = this.encodeKey(key);
+            yield this.adapter.del(bufferKey);
             return;
         });
     }

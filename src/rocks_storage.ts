@@ -3,7 +3,7 @@ const os = require('os')
 const db = level(`${os.homedir()}/spacerocks`, { valueEncoding: 'binary' })
 
 const Adapter = {
-  put: async (key: any, value: any) => {
+  put: async (key: Buffer, value: Buffer) => {
     try {
       await db.put(key, value)
       return
@@ -13,9 +13,9 @@ const Adapter = {
       console.log(error)
     }
   },
-  get: async (key: any) => {
+  get: async (key: Buffer) => {
     try {
-      let value: any = await db.get(key)
+      let value: Buffer = await db.get(key)
       return value 
     } 
     catch (error) {
@@ -23,7 +23,7 @@ const Adapter = {
       console.log(error)
     }
   },
-  del: async (key: any) => {
+  del: async (key: Buffer) => {
     try {
       await db.del(key)
       return
