@@ -1,5 +1,5 @@
 {
-  "name": "subspace-storage",
+  "name": "@subspace/storage",
   "version": "1.0.0",
   "main": "dist/main.js",
   "author": "subspace",
