@@ -11,16 +11,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const rocks_adapter = require('./rocks_storage').default;
 const node_adapter = require('./node_storage').default;
 const browser_adapter = require('./browser_storage').default;
-// schema?
-// profile storage (save the keypair)
-// ledger storage (blocks, txs) => content addressed
-// tracker => save between restarts 
-// gateway nodes list
-// pledge of space / block solutions 
-// SSDB record storage (BEP-44 schema)
-// cache or ephemeral storage
-// self-hosted records (without a node)
-// if I stored the public key of a record 
+// ToDo
+// handle storage of farming plot / proof of space
+// handle cache or ephemeral storage
+// handle self-hosted records (without a node)
 class Storage {
     constructor(adapter) {
         if (adapter === 'browser') {
