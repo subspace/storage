@@ -1,66 +1,71 @@
 const browser_storage = require('localforage')
 
-const Adapter = {
-  put: async (key: string, value: object) => {
-    try {
-      await browser_storage.setItem(key, value)
-      return
-    }
-    catch(error) {
-      console.log('Error setting record with browser storage')
-      console.log(error)
-    }
+export const browserAdapter = {
+  put(key: Buffer, value: Buffer): Promise<void> {
+    return new Promise<void> (async (resolve, reject) => {
+      try {
+        await browser_storage.setItem(key, value)
+        resolve()
+      }
+      catch(error) {
+        reject(error)
+      }
+    })
   },
-  get: async(key: string) => {
-    try {
-      const value: object = await browser_storage.getItem(key)
-      return value
-    }
-    catch(error) {
-      console.log('Error getting record with browser storage')
-      console.log(error)
-    }
+  get(key: Buffer): Promise<Buffer> {
+    return new Promise<Buffer> (async (resolve, reject) => {
+      try {
+        const value: Buffer = await browser_storage.getItem(key)
+        resolve(value)
+      }
+      catch(error) {
+        reject(error)
+      }
+    })
   },
-  del: async (key:string) => {
-    try {
-      await browser_storage.removeItem(key)
-      return
-    }
-    catch(error) {
-      console.log('Error remvoing record with browser storage')
-      console.log(error)
-    }
+  del(key: Buffer): Promise<boolean> {
+    return new Promise<boolean> (async (resolve, reject) => {
+      try {
+        await browser_storage.removeItem(key)
+        resolve(true)
+      }
+      catch(error) {
+        reject(error)
+      }
+    })
   },
-  get_keys: async () => {
-    try {
-      const keys: string[] = await browser_storage.keys()
-      return keys
-    }
-    catch(error) {
-      console.log('Error getting all keys from browser storage')
-      console.log(error)
-    }
+  getKeys(): Promise<string[]> {
+    return new Promise<string[]> (async (resolve, reject) => {
+      try {
+        const keys: string[] = await browser_storage.keys()
+        resolve(keys)
+      }
+      catch(error) {
+        reject(error)
+      }
+    })
   },
-  get_length: async () => {
-    try {
-      const length: number = await browser_storage.length()
-      return length
-    }
-    catch(error) {
-      console.log('Error getting length from browser storage')
-      console.log(error)
-    }
+  getLength(): Promise<number> {
+    return new Promise<number> (async (resolve, reject) => {
+      try {
+        const length: number = await browser_storage.length()
+        resolve(length)
+      }
+      catch(error) {
+        reject(error)
+      }
+    })
   },
-  clear: async () => {
-    try {
-      await browser_storage.clear()
-      return
-    }
-    catch(error) {
-      console.log('Error clearing all records from browser storage')
-      console.log(error)
-    }
-  },
+  clear(): Promise<void> {
+    return new Promise<void> (async (resolve, reject) => {
+      try {
+        await browser_storage.clear()
+        resolve()
+      }
+      catch(error) {
+        reject(error)
+      }
+    })
+  }
 }
 
-export default Adapter

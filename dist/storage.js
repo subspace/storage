@@ -3,93 +3,95 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const level = require('level-rocksdb');
-const os_1 = __importDefault(require("os"));
-const db = level(`${os_1.default.homedir()}/spacerocks`, { valueEncoding: 'binary' });
-exports.rocksAdapter = {
+const browser_storage_1 = require("./browser_storage");
+// import { nodeAdapter } from './node_storage'
+const events_1 = __importDefault(require("events"));
+// ToDo
+// handle storage of farming plot / proof of space
+// handle cache or ephemeral storage
+// handle self-hosted records (without a node)
+class Storage extends events_1.default {
+    constructor(adapter) {
+        super();
+        if (adapter === 'browser') {
+            this.adapter = browser_storage_1.browserAdapter;
+        }
+        else {
+            this.adapter = 'rocks';
+        }
+    }
     put(key, value) {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.put(key, value);
+                await this.adapter.put(Buffer.from(key), Buffer.from(value));
                 resolve();
             }
             catch (error) {
-                reject(error);
-            }
-        });
-    },
-    get(key) {
-        // returns null if not found
-        return new Promise(async (resolve, reject) => {
-            try {
-                const value = await db.get(key);
-                resolve(value);
-            }
-            catch (error) {
-                if (error.notFound)
-                    resolve(null);
-                reject(error);
-            }
-        });
-    },
-    del(key) {
-        // returns true if deleted, and false if not found
-        return new Promise(async (resolve, reject) => {
-            try {
-                await db.del(key);
-                resolve(true);
-            }
-            catch (error) {
-                if (error.notFound)
-                    resolve(false);
-                reject(error);
-            }
-        });
-    },
-    getKeys() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const keys = [];
-                db.createKeyStrem()
-                    .on('data', (key) => {
-                    keys.push(key.toString('hex'));
-                })
-                    .on('end', () => {
-                    resolve(keys);
-                });
-            }
-            catch (error) {
-                reject(error);
-            }
-        });
-    },
-    getLength() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const keys = await this.getKeys();
-                const length = keys.length;
-                resolve(length);
-            }
-            catch (error) {
-                reject(error);
-            }
-        });
-    },
-    clear() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                db.createKeyStrem()
-                    .on('data', async (key) => {
-                    await db.del(key);
-                })
-                    .on('end', () => {
-                    resolve();
-                });
-            }
-            catch (error) {
+                this.emit('error', error);
                 reject(error);
             }
         });
     }
-};
-//# sourceMappingURL=rocks_storage.js.map
+    get(key) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const value = await this.adapter.get(Buffer.from(key));
+                resolve(value.toString());
+            }
+            catch (error) {
+                this.emit('error', error);
+                reject(error);
+            }
+        });
+    }
+    del(key) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await this.adapter.del(Buffer.from(key));
+                resolve();
+            }
+            catch (error) {
+                this.emit('error', error);
+                reject(error);
+            }
+        });
+    }
+    getKeys() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let keys = await this.adapter.getKeys();
+                resolve(keys);
+            }
+            catch (error) {
+                this.emit('error', error);
+                reject(error);
+            }
+        });
+    }
+    getLength() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let length = await this.adapter.getLength();
+                resolve(length);
+            }
+            catch (error) {
+                this.emit('error', error);
+                reject(error);
+            }
+        });
+    }
+    clear() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await this.adapter.clear();
+                resolve();
+            }
+            catch (error) {
+                this.emit('error', error);
+                reject(error);
+            }
+        });
+    }
+}
+exports.default = Storage;
+//# sourceMappingURL=storage.js.map
