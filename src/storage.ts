@@ -1,104 +1,53 @@
-import { rocksAdapter } from './rocks_storage'
-import { browserAdapter } from './browser_storage'
-// import { nodeAdapter } from './node_storage'
-import EventEmitter from 'events'
-
+import BrowserAdapter from './BrowserAdapter'
+import IAdapter from './IAdapter';
+import NodeAdapter from './NodeAdapter'
+import RocksAdapter from './RocksAdapter'
+import * as os from "os";
 
 // ToDo
   // handle storage of farming plot / proof of space
   // handle cache or ephemeral storage
   // handle self-hosted records (without a node)
 
-export default class Storage extends EventEmitter {
-  adapter: any
-  constructor(adapter: string) {
-    super()
-    if (adapter === 'browser') {
-      this.adapter = browserAdapter
-    } else {
-      this.adapter = 'rocks'
+export default class Storage {
+  private adapter: IAdapter
+  constructor(public readonly adapterName: string) {
+    switch (adapterName) {
+      case 'browser':
+        this.adapter = new BrowserAdapter()
+        break;
+      case 'node':
+        this.adapter = new NodeAdapter()
+        break;
+      case 'rocks':
+        this.adapter = new RocksAdapter(os.homedir())
+        break;
+      default:
+        throw new Error('Wrong adapter name, supported adapters: browser, rocks')
     }
   }
 
-  put(key: string, value: string): Promise<void> {
-    return new Promise<void> (async (resolve, reject) => {
-      try {
-        await this.adapter.put(
-          Buffer.from(key),
-          Buffer.from(value)
-        )
-        resolve()
-      }
-      catch(error) {
-        this.emit('error', error)
-        reject(error)
-      }
-    })
+  put(key: string, value: object): Promise<void> {
+    return this.adapter.put(key, value)
   }
 
-  get(key: string): Promise<string> {
-    return new Promise<string> (async (resolve, reject) => {
-      try {
-        const value: Buffer = await this.adapter.get(Buffer.from(key))
-        resolve(value.toString())
-      }
-      catch(error) {
-        this.emit('error', error)
-        reject(error)
-      }
-    })
+  get(key: string): Promise<object> {
+    return this.adapter.get(key)
   }
-
 
   del(key: string): Promise<void> {
-    return new Promise<void> (async (resolve, reject) => {
-      try {
-        await this.adapter.del(Buffer.from(key))
-        resolve()
-      }
-      catch(error) {
-        this.emit('error', error)
-        reject(error)
-      }
-    })
+    return this.adapter.del(key)
   }
 
   getKeys(): Promise<string[]> {
-    return new Promise<string[]> (async (resolve, reject) => {
-      try {
-        let keys: string[] = await this.adapter.getKeys()
-        resolve(keys)
-      }
-      catch(error) {
-        this.emit('error', error)
-        reject(error)
-      }
-    })
+    return this.adapter.getKeys()
   }
 
   getLength(): Promise<number> {
-    return new Promise<number> (async (resolve, reject) => {
-      try {
-        let length: number = await this.adapter.getLength()
-        resolve(length)
-      }
-      catch(error) {
-        this.emit('error', error)
-        reject(error)
-      }
-    })
+    return this.adapter.getLength()
   }
 
   clear(): Promise<void> {
-    return new Promise<void> (async (resolve, reject) => {
-      try {
-        await this.adapter.clear()
-        resolve()
-      }
-      catch(error) {
-        this.emit('error', error)
-        reject(error)
-      }
-    })
+    return this.adapter.clear()
   }
 }

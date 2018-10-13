@@ -2,95 +2,56 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const browser_storage_1 = require("./browser_storage");
-// import { nodeAdapter } from './node_storage'
-const events_1 = __importDefault(require("events"));
+const BrowserAdapter_1 = __importDefault(require("./BrowserAdapter"));
+const NodeAdapter_1 = __importDefault(require("./NodeAdapter"));
+const RocksAdapter_1 = __importDefault(require("./RocksAdapter"));
+const os = __importStar(require("os"));
 // ToDo
 // handle storage of farming plot / proof of space
 // handle cache or ephemeral storage
 // handle self-hosted records (without a node)
-class Storage extends events_1.default {
-    constructor(adapter) {
-        super();
-        if (adapter === 'browser') {
-            this.adapter = browser_storage_1.browserAdapter;
-        }
-        else {
-            this.adapter = 'rocks';
+class Storage {
+    constructor(adapterName) {
+        this.adapterName = adapterName;
+        switch (adapterName) {
+            case 'browser':
+                this.adapter = new BrowserAdapter_1.default();
+                break;
+            case 'node':
+                this.adapter = new NodeAdapter_1.default();
+                break;
+            case 'rocks':
+                this.adapter = new RocksAdapter_1.default(os.homedir());
+                break;
+            default:
+                throw new Error('Wrong adapter name, supported adapters: browser, rocks');
         }
     }
     put(key, value) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.adapter.put(Buffer.from(key), Buffer.from(value));
-                resolve();
-            }
-            catch (error) {
-                this.emit('error', error);
-                reject(error);
-            }
-        });
+        return this.adapter.put(key, value);
     }
     get(key) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const value = await this.adapter.get(Buffer.from(key));
-                resolve(value.toString());
-            }
-            catch (error) {
-                this.emit('error', error);
-                reject(error);
-            }
-        });
+        return this.adapter.get(key);
     }
     del(key) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.adapter.del(Buffer.from(key));
-                resolve();
-            }
-            catch (error) {
-                this.emit('error', error);
-                reject(error);
-            }
-        });
+        return this.adapter.del(key);
     }
     getKeys() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                let keys = await this.adapter.getKeys();
-                resolve(keys);
-            }
-            catch (error) {
-                this.emit('error', error);
-                reject(error);
-            }
-        });
+        return this.adapter.getKeys();
     }
     getLength() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                let length = await this.adapter.getLength();
-                resolve(length);
-            }
-            catch (error) {
-                this.emit('error', error);
-                reject(error);
-            }
-        });
+        return this.adapter.getLength();
     }
     clear() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.adapter.clear();
-                resolve();
-            }
-            catch (error) {
-                this.emit('error', error);
-                reject(error);
-            }
-        });
+        return this.adapter.clear();
     }
 }
 exports.default = Storage;

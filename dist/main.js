@@ -40,7 +40,7 @@ class Storage {
         return encodedKey;
     }
     encodeValue(value) {
-        // convert value (JSON object) to binary before saving to storage 
+        // convert value (JSON object) to binary before saving to storage
         // stringify JSON and convert to a buffer
         const stringValue = JSON.stringify(value);
         const bufferValue = Buffer.from(stringValue);
@@ -80,13 +80,13 @@ class Storage {
     }
     getKeys() {
         return __awaiter(this, void 0, void 0, function* () {
-            let keys = yield this.adapter.get_keys();
+            let keys = yield this.adapter.getKeys();
             return keys;
         });
     }
     getLength() {
         return __awaiter(this, void 0, void 0, function* () {
-            let length = yield this.adapter.get_length();
+            let length = yield this.adapter.getLength();
             return length;
         });
     }

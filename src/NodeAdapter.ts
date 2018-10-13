@@ -1,5 +1,6 @@
-/*
 import IAdapter from "./IAdapter"
+// TODO: Fix typings here
+// @ts-ignore
 import * as node_storage from 'node-persist' // TODO: Should work with an instance instead of global state
 import * as os from 'os'
 
@@ -52,5 +53,3 @@ export default class NodeAdapter implements IAdapter {
     await node_storage.clear()
   }
 }
-*/
-//# sourceMappingURL=node_storage.js.map

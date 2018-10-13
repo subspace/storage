@@ -1,95 +1,78 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const level = require('level-rocksdb');
-const os_1 = __importDefault(require("os"));
-const db = level(`${os_1.default.homedir()}/spacerocks`, { valueEncoding: 'binary' });
-exports.rocksAdapter = {
-    put(key, value) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await db.put(key, value);
-                resolve();
+// TODO: Fix typings here
+// @ts-ignore
+const level = __importStar(require("level-rocksdb"));
+const os = __importStar(require("os"));
+class RocksAdapter {
+    constructor() {
+        this.db = level(`${os.homedir()}/spacerocks`, { valueEncoding: 'binary' });
+    }
+    async put(key, value) {
+        await this.db.put(key, value);
+    }
+    async get(key) {
+        try {
+            return this.db.get(key);
+        }
+        catch (error) {
+            if (error.notFound) {
+                return null;
             }
-            catch (error) {
-                reject(error);
+            throw error;
+        }
+    }
+    async del(key) {
+        try {
+            await this.db.del(key);
+        }
+        catch (error) {
+            // Ignore if value already deleted
+            if (error.notFound) {
+                return;
             }
-        });
-    },
-    get(key) {
-        // returns null if not found
-        return new Promise(async (resolve, reject) => {
-            try {
-                const value = await db.get(key);
-                resolve(value);
-            }
-            catch (error) {
-                if (error.notFound)
-                    resolve(null);
-                reject(error);
-            }
-        });
-    },
-    del(key) {
-        // returns true if deleted, and false if not found
-        return new Promise(async (resolve, reject) => {
-            try {
-                await db.del(key);
-                resolve(true);
-            }
-            catch (error) {
-                if (error.notFound)
-                    resolve(false);
-                reject(error);
-            }
-        });
-    },
-    getKeys() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const keys = [];
-                db.createKeyStrem()
-                    .on('data', (key) => {
-                    keys.push(key.toString('hex'));
-                })
-                    .on('end', () => {
-                    resolve(keys);
-                });
-            }
-            catch (error) {
-                reject(error);
-            }
-        });
-    },
-    getLength() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const keys = await this.getKeys();
-                const length = keys.length;
-                resolve(length);
-            }
-            catch (error) {
-                reject(error);
-            }
-        });
-    },
-    clear() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                db.createKeyStrem()
-                    .on('data', async (key) => {
-                    await db.del(key);
-                })
-                    .on('end', () => {
-                    resolve();
-                });
-            }
-            catch (error) {
-                reject(error);
-            }
+            throw error;
+        }
+    }
+    async getKeys() {
+        return new Promise(async (resolve) => {
+            const keys = [];
+            this.db.createKeyStrem()
+                .on('data', (key) => {
+                keys.push(key);
+            })
+                .on('end', () => {
+                resolve(keys);
+            });
         });
     }
-};
+    async getLength() {
+        const keys = await this.getKeys();
+        return keys.length;
+    }
+    async clear() {
+        return new Promise(async (resolve, reject) => {
+            const promises = [];
+            this.db.createKeyStrem()
+                .on('data', (key) => {
+                promises.push(this.db.del(key));
+            })
+                .on('end', () => {
+                Promise.all(promises)
+                    .then(() => {
+                    resolve();
+                })
+                    .catch(reject);
+            });
+        });
+    }
+}
+exports.default = RocksAdapter;
 //# sourceMappingURL=rocks_storage.js.map
