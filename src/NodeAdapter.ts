@@ -28,11 +28,11 @@ export default class NodeAdapter implements IAdapter {
     }
     await node_storage.init(options)
   }
-  public async put(key: string, value: object): Promise<void> {
+  public async put(key: string, value: string): Promise<void> {
     await this.readyPromise
     await node_storage.setItem(key, value)
   }
-  public async get(key: string): Promise<object> {
+  public async get(key: string): Promise<string|null> {
     await this.readyPromise
     return await node_storage.getItem(key)
   }

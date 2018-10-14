@@ -1,7 +1,7 @@
 export default interface IAdapter {
-  put(key: string, value: object): Promise<void>;
+  put(key: string, value: string): Promise<void>;
 
-  get(key: string): Promise<object|null>;
+  get(key: string): Promise<string|null>;
 
   del(key: string): Promise<void>;
 

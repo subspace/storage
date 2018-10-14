@@ -27,11 +27,11 @@ export default class Storage {
     }
   }
 
-  put(key: string, value: object): Promise<void> {
+  put(key: string, value: string): Promise<void> {
     return this.adapter.put(key, value)
   }
 
-  get(key: string): Promise<object> {
+  get(key: string): Promise<string|null> {
     return this.adapter.get(key)
   }
 

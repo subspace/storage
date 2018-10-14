@@ -8,10 +8,10 @@ export default class RocksAdapter implements IAdapter {
   public constructor(root: string) {
     this.db = level(`${root}/spacerocks`, { valueEncoding: 'binary' })
   }
-  async put(key: string, value: object): Promise<void> {
+  async put(key: string, value: string): Promise<void> {
     await this.db.put(key, value)
   }
-  async get(key: string): Promise<object|null> {
+  async get(key: string): Promise<string|null> {
     try {
       return this.db.get(key)
     } catch (error) {

@@ -2,11 +2,11 @@ import * as browser_storage from 'localforage'
 import IAdapter from "./IAdapter";
 
 export default class BrowserAdapter implements IAdapter {
-  public async put(key: string, value: object) {
+  public async put(key: string, value: string) {
     await browser_storage.setItem(key, value)
   }
 
-  public get(key: string): Promise<object|null> {
+  public get(key: string): Promise<string|null> {
     return browser_storage.getItem(key)
   }
 
