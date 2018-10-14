@@ -1,6 +1,6 @@
 import BrowserAdapter from './BrowserAdapter'
 import IAdapter from './IAdapter';
-import NodeAdapter from './NodeAdapter'
+//import NodeAdapter from './NodeAdapter'
 import RocksAdapter from './RocksAdapter'
 import * as os from "os";
 
@@ -16,9 +16,9 @@ export default class Storage {
       case 'browser':
         this.adapter = new BrowserAdapter()
         break;
-      case 'node':
-        this.adapter = new NodeAdapter()
-        break;
+      // case 'node':
+      //   this.adapter = new NodeAdapter()
+      //   break;
       case 'rocks':
         this.adapter = new RocksAdapter(os.homedir())
         break;
