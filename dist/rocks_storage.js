@@ -1,47 +1,78 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const level = require('level-rocksdb');
-const os = require('os');
-const db = level(`${os.homedir()}/spacerocks`, { valueEncoding: 'binary' });
-const Adapter = {
-    put: (key, value) => __awaiter(this, void 0, void 0, function* () {
+// TODO: Fix typings here
+// @ts-ignore
+const level = __importStar(require("level-rocksdb"));
+const os = __importStar(require("os"));
+class RocksAdapter {
+    constructor() {
+        this.db = level(`${os.homedir()}/spacerocks`, { valueEncoding: 'binary' });
+    }
+    async put(key, value) {
+        await this.db.put(key, value);
+    }
+    async get(key) {
         try {
-            yield db.put(key, value);
-            return;
+            return this.db.get(key);
         }
         catch (error) {
-            console.log('Error putting record with rocks storage');
-            console.log(error);
+            if (error.notFound) {
+                return null;
+            }
+            throw error;
         }
-    }),
-    get: (key) => __awaiter(this, void 0, void 0, function* () {
+    }
+    async del(key) {
         try {
-            let value = yield db.get(key);
-            return value;
+            await this.db.del(key);
         }
         catch (error) {
-            console.log('Error getting record with rocks storage');
-            console.log(error);
+            // Ignore if value already deleted
+            if (error.notFound) {
+                return;
+            }
+            throw error;
         }
-    }),
-    del: (key) => __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield db.del(key);
-            return;
-        }
-        catch (error) {
-            console.log('Error deleting record with rocks storage');
-            console.log(error);
-        }
-    })
-};
-exports.default = Adapter;
+    }
+    async getKeys() {
+        return new Promise(async (resolve) => {
+            const keys = [];
+            this.db.createKeyStrem()
+                .on('data', (key) => {
+                keys.push(key);
+            })
+                .on('end', () => {
+                resolve(keys);
+            });
+        });
+    }
+    async getLength() {
+        const keys = await this.getKeys();
+        return keys.length;
+    }
+    async clear() {
+        return new Promise(async (resolve, reject) => {
+            const promises = [];
+            this.db.createKeyStrem()
+                .on('data', (key) => {
+                promises.push(this.db.del(key));
+            })
+                .on('end', () => {
+                Promise.all(promises)
+                    .then(() => {
+                    resolve();
+                })
+                    .catch(reject);
+            });
+        });
+    }
+}
+exports.default = RocksAdapter;
 //# sourceMappingURL=rocks_storage.js.map
