@@ -24,15 +24,15 @@ Not implemented yet...
 #
 
 ```javascript
-storage.put(key: string | Buffer, value: Buffer) => { }
+storage.put(key: string, value: string) => { }
 ```
 
 ```javascript
-storage.get(key: string | Buffer) => { value: Buffer }
+storage.get(key: string) => { value: string|null }
 ```
 
 ```javascript
-storage.del(key: string | Buffer) => { }
+storage.del(key: string) => { }
 ```
 
 ### Usage by other modules
