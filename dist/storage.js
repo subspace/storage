@@ -11,7 +11,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const BrowserAdapter_1 = __importDefault(require("./BrowserAdapter"));
-const NodeAdapter_1 = __importDefault(require("./NodeAdapter"));
+//import NodeAdapter from './NodeAdapter'
 const RocksAdapter_1 = __importDefault(require("./RocksAdapter"));
 const os = __importStar(require("os"));
 // ToDo
@@ -25,9 +25,9 @@ class Storage {
             case 'browser':
                 this.adapter = new BrowserAdapter_1.default();
                 break;
-            case 'node':
-                this.adapter = new NodeAdapter_1.default();
-                break;
+            // case 'node':
+            //   this.adapter = new NodeAdapter()
+            //   break;
             case 'rocks':
                 this.adapter = new RocksAdapter_1.default(os.homedir());
                 break;
