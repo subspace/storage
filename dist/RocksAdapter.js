@@ -1,18 +1,14 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // TODO: Fix typings here
 // @ts-ignore
-const level = __importStar(require("level-rocksdb"));
+const level_rocksdb_1 = __importDefault(require("level-rocksdb"));
 class RocksAdapter {
     constructor(root) {
-        this.db = level(`${root}/spacerocks`, { valueEncoding: 'binary' });
+        this.db = level_rocksdb_1.default(`${root}/spacerocks`, { valueEncoding: 'binary' });
     }
     async put(key, value) {
         await this.db.put(key, value);

@@ -1,7 +1,7 @@
 import IAdapter from './IAdapter'
 // TODO: Fix typings here
 // @ts-ignore
-import * as level from 'level-rocksdb'
+import level from 'level-rocksdb'
 
 export default class RocksAdapter implements IAdapter {
   db: any
