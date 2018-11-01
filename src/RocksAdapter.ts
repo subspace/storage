@@ -13,7 +13,7 @@ export default class RocksAdapter implements IAdapter {
   }
   async get(key: string): Promise<string|null> {
     try {
-      return this.db.get(key)
+      return await this.db.get(key)
     } catch (error) {
       if (error.notFound) {
         return null

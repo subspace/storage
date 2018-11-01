@@ -15,7 +15,7 @@ class RocksAdapter {
     }
     async get(key) {
         try {
-            return this.db.get(key);
+            return await this.db.get(key);
         }
         catch (error) {
             if (error.notFound) {
