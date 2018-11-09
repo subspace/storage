@@ -5,8 +5,8 @@ import level from 'level-rocksdb'
 
 export default class RocksAdapter implements IAdapter {
   db: any
-  public constructor(root: string) {
-    this.db = level(`${root}/spacerocks`, { valueEncoding: 'binary' })
+  public constructor(path: string) {
+    this.db = level(path, { valueEncoding: 'binary' })
   }
   async put(key: string, value: string): Promise<void> {
     await this.db.put(key, value)

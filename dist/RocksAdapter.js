@@ -7,8 +7,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-ignore
 const level_rocksdb_1 = __importDefault(require("level-rocksdb"));
 class RocksAdapter {
-    constructor(root) {
-        this.db = level_rocksdb_1.default(`${root}/spacerocks`, { valueEncoding: 'binary' });
+    constructor(path) {
+        this.db = level_rocksdb_1.default(path, { valueEncoding: 'binary' });
     }
     async put(key, value) {
         await this.db.put(key, value);

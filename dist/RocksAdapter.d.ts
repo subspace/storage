@@ -1,7 +1,7 @@
 import IAdapter from './IAdapter';
 export default class RocksAdapter implements IAdapter {
     db: any;
-    constructor(root: string);
+    constructor(path: string);
     put(key: string, value: string): Promise<void>;
     get(key: string): Promise<string | null>;
     del(key: string): Promise<void>;

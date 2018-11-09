@@ -1,8 +1,8 @@
 export default class Storage {
     readonly adapterName: string;
-    path?: string;
+    nameSpace?: string;
     private adapter;
-    constructor(adapterName: string, path?: string);
+    constructor(adapterName: string, nameSpace?: string);
     put(key: string, value: string): Promise<void>;
     get(key: string): Promise<string | null>;
     del(key: string): Promise<void>;

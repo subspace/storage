@@ -13,7 +13,7 @@ export default class Storage {
   private adapter: IAdapter
   constructor(
     public readonly adapterName: string,
-    public path?: string
+    public nameSpace?: string
   ) {
     switch (adapterName) {
       case 'browser':
@@ -23,11 +23,14 @@ export default class Storage {
       //   this.adapter = new NodeAdapter()
       //   break;
       case 'rocks':
-      if (path) {
-        this.adapter = new RocksAdapter(`${os.homedir()}/path`)
+      let path: string
+      if (nameSpace) {
+        path = `${os.homedir()}/spacerocks/path`
       } else {
-        this.adapter = new RocksAdapter(os.homedir())
+        path = `${os.homedir()}/spacerocks`
       }
+
+      this.adapter = new RocksAdapter(path)
         
         break;
       default:
