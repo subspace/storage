@@ -19,8 +19,9 @@ const os = __importStar(require("os"));
 // handle cache or ephemeral storage
 // handle self-hosted records (without a node)
 class Storage {
-    constructor(adapterName) {
+    constructor(adapterName, path) {
         this.adapterName = adapterName;
+        this.path = path;
         switch (adapterName) {
             case 'browser':
                 this.adapter = new BrowserAdapter_1.default();
@@ -29,7 +30,12 @@ class Storage {
             //   this.adapter = new NodeAdapter()
             //   break;
             case 'rocks':
-                this.adapter = new RocksAdapter_1.default(os.homedir());
+                if (path) {
+                    this.adapter = new RocksAdapter_1.default(`${os.homedir()}/path`);
+                }
+                else {
+                    this.adapter = new RocksAdapter_1.default(os.homedir());
+                }
                 break;
             default:
                 throw new Error('Wrong adapter name, supported adapters: browser, rocks');

@@ -11,7 +11,10 @@ import * as os from "os";
 
 export default class Storage {
   private adapter: IAdapter
-  constructor(public readonly adapterName: string) {
+  constructor(
+    public readonly adapterName: string,
+    public path?: string
+  ) {
     switch (adapterName) {
       case 'browser':
         this.adapter = new BrowserAdapter()
@@ -20,7 +23,12 @@ export default class Storage {
       //   this.adapter = new NodeAdapter()
       //   break;
       case 'rocks':
+      if (path) {
+        this.adapter = new RocksAdapter(`${os.homedir()}/path`)
+      } else {
         this.adapter = new RocksAdapter(os.homedir())
+      }
+        
         break;
       default:
         throw new Error('Wrong adapter name, supported adapters: browser, rocks')
