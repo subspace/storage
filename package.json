@@ -17,5 +17,9 @@
     "level-rocksdb": "^3.0.1",
     "localforage": "^1.7.2",
     "node-persist": "^3.0.1"
+  },
+  "scripts": {
+    "build": "rm -rf dist/* && tsc -b",
+    "watch": "tsc -w"
   }
 }
