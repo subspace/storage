@@ -32,7 +32,7 @@ class Storage {
             case 'rocks':
                 let path;
                 if (nameSpace) {
-                    path = `${os.homedir()}/spacerocks/path`;
+                    path = `${os.homedir()}/spacerocks/${path}`;
                 }
                 else {
                     path = `${os.homedir()}/spacerocks`;
