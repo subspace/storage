@@ -25,7 +25,7 @@ export default class Storage {
       case 'rocks':
       let path: string
       if (nameSpace) {
-        path = `${os.homedir()}/spacerocks/${path}`
+        path = `${os.homedir()}/spacerocks/${nameSpace}`
       } else {
         path = `${os.homedir()}/spacerocks`
       }
