@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "dist/storage.js",
   "types": "dist/storage.d.ts",
+  "browser": {
+    "level-rocksdb": false
+  },
   "author": "subspace",
   "license": "MIT",
   "private": true,
